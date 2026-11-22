@@ -25,6 +25,7 @@ pipeline {
 
         stage('Login to ECR') {
             steps {
+	       dir('app') {
                 sh '''
                 aws ecr get-login-password \
                   --region ${AWS_REGION} | \
@@ -32,6 +33,7 @@ pipeline {
                   --username AWS \
                   --password-stdin ${ECR_REGISTRY}
                 '''
+               }
             }
         }
 
@@ -49,6 +51,7 @@ pipeline {
 
         stage('Deploy to EKS') {
             steps {
+              dir('app') {
                 sh '''
                 aws eks update-kubeconfig \
                   --region ${AWS_REGION} \
@@ -59,6 +62,7 @@ pipeline {
 
                 kubectl apply -f service.yaml
                 '''
+              }
             }
         }
 
